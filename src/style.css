@@ -112,6 +112,22 @@ body.focus-active::after {
     opacity: 0;
 }
 
+/* 移动端隐藏右下角网格高光 */
+@media (max-width: 767px) {
+    body::before {
+        mask-image:
+            radial-gradient(ellipse 60% 60% at 15% 10%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 25%, transparent 50%);
+        -webkit-mask-image:
+            radial-gradient(ellipse 60% 60% at 15% 10%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 25%, transparent 50%);
+    }
+
+    body::after {
+        background:
+            radial-gradient(ellipse at 20% 15%, rgba(212, 175, 55, 0.08) 0%, transparent 40%),
+            radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.03) 0%, transparent 50%);
+    }
+}
+
 /* 专注模式蓝紫色网格层 */
 .focus-grid-layer {
     background-image:

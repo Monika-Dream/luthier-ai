@@ -132,23 +132,40 @@ const handleCardMouseMove = (event) => {
             </div>
           </div>
 
-          <!-- 子选项网格 - 移动端使用更紧凑的间距 -->
-          <div class="grid grid-cols-2 gap-1.5 md:gap-2 transition-all duration-600 ease-spring-soft origin-top"
-               :class="selectedCategory?.id === category.id ? 'sub-options-expanded' : 'sub-options-collapsed'">
+          <!-- 子选项网格 - 移动端使用更大的点击区域 -->
+          <div class="transition-all duration-600 ease-spring-soft origin-top"
+               :class="[
+                 selectedCategory?.id === category.id ? 'sub-options-expanded' : 'sub-options-collapsed',
+                 isMobile ? 'flex flex-col gap-2' : 'grid grid-cols-2 gap-2'
+               ]">
             <button
               v-for="(sub, subIndex) in category.subOptions"
               :key="sub.name"
               @click.stop="handleSelectSubOption(sub, category)"
-              class="px-2 md:px-3 py-2 md:py-2 text-[11px] md:text-xs text-left rounded-lg flex items-center justify-between group/sub backdrop-blur-sm apple-button sub-option-btn"
-              :style="isMobile ? {} : { animationDelay: `${subIndex * 40}ms` }"
+              class="text-left rounded-lg flex items-center justify-between group/sub backdrop-blur-sm apple-button sub-option-btn"
               :class="[
+                isMobile ? 'px-3 py-3 text-sm' : 'px-3 py-2 text-xs',
                 currentSubOption?.name === sub.name
-                  ? 'bg-violin-gold/20 text-violin-gold border border-violin-gold/30 shadow-sm shadow-violin-gold/20 scale-105'
+                  ? 'bg-violin-gold/20 text-violin-gold border border-violin-gold/30 shadow-sm shadow-violin-gold/20'
                   : 'bg-black/20 text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10',
                 !isMobile && selectedCategory?.id === category.id ? 'animate-spring-in' : ''
-              ]">
+              ]"
+              :style="isMobile ? {} : { animationDelay: `${subIndex * 40}ms` }">
               <span class="truncate">{{ sub.name }}</span>
-              <span v-if="currentSubOption?.name === sub.name" class="w-1.5 h-1.5 rounded-full bg-violin-gold animate-breathe-soft shrink-0 ml-1"></span>
+              <svg v-if="currentSubOption?.name !== sub.name"
+                   xmlns="http://www.w3.org/2000/svg"
+                   :width="isMobile ? 16 : 14"
+                   :height="isMobile ? 16 : 14"
+                   viewBox="0 0 24 24"
+                   fill="none"
+                   stroke="currentColor"
+                   stroke-width="2"
+                   stroke-linecap="round"
+                   stroke-linejoin="round"
+                   class="shrink-0 ml-2 text-zinc-600 group-hover/sub:text-violin-gold transition-colors">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+              <span v-else class="w-2 h-2 rounded-full bg-violin-gold animate-breathe-soft shrink-0 ml-2"></span>
             </button>
           </div>
         </div>
@@ -254,24 +271,32 @@ const handleCardMouseMove = (event) => {
 
 /* 移动端卡片触控优化 */
 .spring-card-mobile {
-  transition: transform 0.2s ease-out, background-color 0.2s ease;
+  opacity: 1 !important; /* 确保移动端卡片始终可见 */
+  transform: none !important; /* 重置任何残留的动画变换 */
+  transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              background-color 0.15s ease,
+              box-shadow 0.15s ease;
   -webkit-tap-highlight-color: transparent;
 }
 
 .spring-card-mobile:active {
-  transform: scale(0.98);
-  background-color: rgba(39, 39, 42, 0.6);
+  transform: scale(0.96) !important;
+  background-color: rgba(39, 39, 42, 0.8) !important;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* 移动端子选项按钮 */
 @media (max-width: 767px) {
   .sub-option-btn {
     min-height: 40px;
-    transition: all 0.2s ease-out;
+    transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                background-color 0.15s ease,
+                box-shadow 0.15s ease;
   }
 
   .sub-option-btn:active {
-    transform: scale(0.95);
+    transform: scale(0.93) !important;
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.3);
   }
 }
 </style>

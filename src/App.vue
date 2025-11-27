@@ -13,7 +13,8 @@ const focusMode = ref(false)          // 专注模式开关
 const selectedCategory = ref(null)    // 当前选中的大分类
 const currentSubOption = ref(null)    // 当前选中的子功能
 const mobileMenuOpen = ref(false)     // 移动端菜单开关
-const isMobile = ref(false)           // 是否为移动端
+// 初始化时就检测是否为移动端，避免闪烁
+const isMobile = ref(typeof window !== 'undefined' && window.innerWidth < 768)
 
 // 检测是否为移动端
 const checkMobile = () => {
@@ -130,9 +131,8 @@ const handleMobileBack = () => {
     h-screen: 占满全屏
     flex-col: 垂直布局
     max-w-[1800px]: 大屏限制宽度
-    移动端: pb-20 为底部导航栏留空间
   -->
-  <div class="h-screen flex flex-col p-3 md:p-6 lg:p-8 pb-20 md:pb-6 lg:pb-8 max-w-[1800px] mx-auto antialiased text-zinc-200" :class="{ 'animate-blur-in': !isMobile }">
+  <div class="h-screen flex flex-col p-3 md:p-6 lg:p-8 pb-6 max-w-[1800px] mx-auto antialiased text-zinc-200" :class="{ 'animate-blur-in': !isMobile }">
 
     <!-- =========================== -->
     <!-- 顶部导航栏 (Header) -->
@@ -207,7 +207,7 @@ const handleMobileBack = () => {
           @select-sub-option="handleSelectSubOption"
           :class="{
             'fixed inset-0 z-40 bg-violin-black/98 backdrop-blur-xl pt-20 px-4 pb-24': isMobile && mobileMenuOpen && selectedCategory,
-            'absolute inset-0 z-30': isMobile && !selectedCategory
+            'flex-1': isMobile && !selectedCategory
           }"
         />
       </transition>
@@ -215,7 +215,7 @@ const handleMobileBack = () => {
       <!-- 右侧：核心功能面板 -->
       <transition name="panel-slide">
         <DiagnosticPanel
-          v-show="!isMobile || selectedCategory"
+          v-if="!isMobile || selectedCategory"
           :selected-category="selectedCategory"
           :current-sub-option="currentSubOption"
           :focus-mode="focusMode"
@@ -228,36 +228,22 @@ const handleMobileBack = () => {
   </div>
 
   <!-- =========================== -->
-  <!-- 移动端底部导航栏 -->
+  <!-- 移动端悬浮首页按钮 -->
   <!-- =========================== -->
-  <nav v-if="isMobile" class="fixed bottom-0 left-0 right-0 z-50 bg-violin-black/95 backdrop-blur-xl border-t border-white/5 safe-area-bottom">
-    <div class="flex items-center justify-around h-16 px-4">
-      <!-- 首页按钮 -->
-      <button
-        @click="handleClosePanel"
-        class="flex flex-col items-center justify-center flex-1 h-full transition-all duration-300"
-        :class="!selectedCategory ? 'text-violin-gold' : 'text-zinc-500'"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-        <span class="text-[10px] mt-1">首页</span>
-      </button>
-
-      <!-- 返回按钮 - 仅在选中分类后显示 -->
-      <button
-        v-if="selectedCategory"
-        @click="handleMobileBack"
-        class="flex flex-col items-center justify-center flex-1 h-full transition-all duration-300 text-zinc-500 active:text-violin-gold"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-        <span class="text-[10px] mt-1">返回</span>
-      </button>
-    </div>
-  </nav>
+  <div v-if="isMobile" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+    <button
+      @click="handleClosePanel"
+      class="w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg active:scale-90"
+      :class="!selectedCategory
+        ? 'bg-violin-gold text-black shadow-violin-gold/30'
+        : 'bg-zinc-800/90 backdrop-blur-md text-zinc-400 border border-white/10 hover:border-violin-gold/30'"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+    </button>
+  </div>
 </template>
 
 <style scoped>
@@ -291,6 +277,14 @@ const handleMobileBack = () => {
 .panel-slide-leave-to {
   opacity: 0;
   transform: translateX(30px);
+}
+
+/* 移动端面板离开时脱离文档流，避免挤压侧边栏 */
+@media (max-width: 767px) {
+  .panel-slide-leave-active {
+    position: absolute;
+    inset: 0;
+  }
 }
 
 /* iOS 安全区域适配 */
