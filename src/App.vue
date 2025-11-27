@@ -132,25 +132,14 @@ const handleMobileBack = () => {
     max-w-[1800px]: 大屏限制宽度
     移动端: pb-20 为底部导航栏留空间
   -->
-  <div class="h-screen flex flex-col p-3 md:p-6 lg:p-8 pb-20 md:pb-6 lg:pb-8 max-w-[1800px] mx-auto antialiased text-zinc-200 animate-blur-in">
+  <div class="h-screen flex flex-col p-3 md:p-6 lg:p-8 pb-20 md:pb-6 lg:pb-8 max-w-[1800px] mx-auto antialiased text-zinc-200" :class="{ 'animate-blur-in': !isMobile }">
 
     <!-- =========================== -->
     <!-- 顶部导航栏 (Header) -->
     <!-- =========================== -->
-    <header class="flex justify-between items-center mb-4 md:mb-8 shrink-0 relative z-50 animate-spring-in">
+    <header class="flex justify-between items-center mb-4 md:mb-8 shrink-0 relative z-50" :class="{ 'animate-spring-in': !isMobile }">
 
-      <!-- 移动端返回按钮 -->
-      <button
-        v-if="isMobile && selectedCategory"
-        @click="handleMobileBack"
-        class="md:hidden w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-all duration-300 mr-2 active:scale-95"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-      </button>
-
-      <!-- Logo 区域 - 添加悬浮动画 -->
+      <!-- Logo 区域 - 添加悬���动画 -->
       <div class="flex items-center gap-2 md:gap-3 transition-all duration-600 ease-apple-spring group logo-container flex-1"
            :class="{ 'opacity-30 blur-sm scale-95': focusMode }">
         <div class="text-violin-gold transition-transform duration-400 ease-apple-spring group-hover:scale-110 group-hover:rotate-6">
@@ -169,7 +158,7 @@ const handleMobileBack = () => {
         </div>
       </div>
 
-      <!-- 专注模式开关按钮 - 增强交互动画 -->
+      <!-- 专注模式开关按钮 - 仅桌面端显示 -->
       <div class="relative group hidden md:block">
         <div class="flex items-center gap-2 md:gap-3 bg-violin-panel/50 border border-white/5 rounded-full px-3 md:px-4 py-1.5 md:py-2 backdrop-blur-sm shadow-inner cursor-pointer hover:border-violin-gold/30 transition-all duration-400 ease-apple-spring hover:scale-105 focus-toggle apple-button"
              @click="toggleFocusMode">
@@ -194,7 +183,7 @@ const handleMobileBack = () => {
       </div>
 
       <!-- 移动端当前选中显示 -->
-      <div v-if="isMobile && selectedCategory && !mobileMenuOpen" class="text-right">
+      <div v-if="isMobile && selectedCategory" class="text-right">
         <p class="text-[10px] text-violin-gold uppercase tracking-wider">当前模块</p>
         <p class="text-sm text-white font-medium truncate max-w-[120px]">{{ currentSubOption?.name || selectedCategory.title }}</p>
       </div>
@@ -242,47 +231,30 @@ const handleMobileBack = () => {
   <!-- 移动端底部导航栏 -->
   <!-- =========================== -->
   <nav v-if="isMobile" class="fixed bottom-0 left-0 right-0 z-50 bg-violin-black/95 backdrop-blur-xl border-t border-white/5 safe-area-bottom">
-    <div class="flex items-center justify-around h-16 px-2">
-      <!-- 首页/菜单按钮 -->
+    <div class="flex items-center justify-around h-16 px-4">
+      <!-- 首页按钮 -->
       <button
-        @click="selectedCategory ? (mobileMenuOpen = !mobileMenuOpen) : null"
-        class="flex flex-col items-center justify-center w-16 h-full transition-all duration-300"
-        :class="!selectedCategory || mobileMenuOpen ? 'text-violin-gold' : 'text-zinc-500'"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path v-if="selectedCategory && mobileMenuOpen" d="M3 12h18M3 6h18M3 18h18"></path>
-          <path v-else d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline v-if="!selectedCategory || !mobileMenuOpen" points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-        <span class="text-[10px] mt-1">{{ selectedCategory && mobileMenuOpen ? '菜单' : '首页' }}</span>
-      </button>
-
-      <!-- 专注模式按钮 -->
-      <button
-        v-if="selectedCategory"
-        @click="toggleFocusMode"
-        class="flex flex-col items-center justify-center w-16 h-full transition-all duration-300"
-        :class="focusMode ? 'text-violet-400' : 'text-zinc-500'"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"></circle>
-          <circle cx="12" cy="12" r="6"></circle>
-          <circle cx="12" cy="12" r="2"></circle>
-        </svg>
-        <span class="text-[10px] mt-1">专注</span>
-      </button>
-
-      <!-- 当前功能快捷切换 -->
-      <button
-        v-if="selectedCategory"
-        class="flex flex-col items-center justify-center w-16 h-full transition-all duration-300 text-zinc-500"
         @click="handleClosePanel"
+        class="flex flex-col items-center justify-center flex-1 h-full transition-all duration-300"
+        :class="!selectedCategory ? 'text-violin-gold' : 'text-zinc-500'"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-          <line x1="9" y1="3" x2="9" y2="21"></line>
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
         </svg>
-        <span class="text-[10px] mt-1">切换</span>
+        <span class="text-[10px] mt-1">首页</span>
+      </button>
+
+      <!-- 返回按钮 - 仅在选中分类后显示 -->
+      <button
+        v-if="selectedCategory"
+        @click="handleMobileBack"
+        class="flex flex-col items-center justify-center flex-1 h-full transition-all duration-300 text-zinc-500 active:text-violin-gold"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        <span class="text-[10px] mt-1">返回</span>
       </button>
     </div>
   </nav>

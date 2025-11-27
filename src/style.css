@@ -246,7 +246,7 @@ body.focus-active::after {
 /* 确保 Vue 应用内容在背景之上 */
 #app {
     position: relative;
-    z-index: 2;
+    z-index: 10;
 }
 
 /* =========================================

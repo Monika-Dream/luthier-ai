@@ -62,8 +62,8 @@ const handleCardMouseMove = (event) => {
   >
     <!-- 固定宽度容器防止内容挤压 -->
     <div :class="focusMode ? 'w-0' : isMobile ? 'w-full' : 'w-full md:w-80 lg:w-96'">
-      <!-- 标题区域 - 带有苹果风格的模糊淡入 -->
-      <div class="mb-4 md:mb-6 animate-blur-in">
+      <!-- 标题区域 -->
+      <div class="mb-4 md:mb-6" :class="{ 'animate-blur-in': !isMobile }">
         <h2 class="font-serif text-xl md:text-3xl lg:text-4xl mb-2 md:mb-3 text-white bg-gradient-to-r from-white to-violet-100 bg-clip-text text-transparent">
           {{ isMobile ? '选择功能' : '演奏技法剖析' }}
         </h2>
@@ -79,14 +79,14 @@ const handleCardMouseMove = (event) => {
              @click="handleSelectCategory(category)"
              @mouseenter="!isMobile && handleCardHover($event, true)"
              @mouseleave="!isMobile && handleCardHover($event, false)"
-             class="group relative overflow-hidden p-3.5 md:p-5 rounded-xl border cursor-pointer ripple-container animate-stagger-in"
+             class="group relative overflow-hidden p-3.5 md:p-5 rounded-xl border cursor-pointer ripple-container"
              :class="[
-                isMobile ? 'spring-card-mobile' : 'spring-card',
+                isMobile ? 'spring-card-mobile' : 'spring-card animate-stagger-in',
                 selectedCategory?.id === category.id
                   ? 'bg-gradient-to-r from-violin-gold/10 to-transparent border-violin-gold/50 shadow-[0_0_30px_-10px_rgba(212,175,55,0.15)] scale-[1.02] glow-pulse-soft'
                   : 'bg-zinc-900/40 border-white/5 hover:border-zinc-700 hover:bg-zinc-800/40'
              ]"
-             :style="{ animationDelay: `${index * 60}ms` }">
+             :style="isMobile ? {} : { animationDelay: `${index * 60}ms` }">
 
           <!-- 激活指示条 - 带有更流畅的动画 -->
           <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-violin-gold to-yellow-500 transition-all duration-500 ease-apple-spring"
@@ -133,19 +133,19 @@ const handleCardMouseMove = (event) => {
           </div>
 
           <!-- 子选项网格 - 移动端使用更紧凑的间距 -->
-          <div class="grid grid-cols-2 gap-1.5 md:gap-2 overflow-hidden transition-all duration-600 ease-spring-soft origin-top"
+          <div class="grid grid-cols-2 gap-1.5 md:gap-2 transition-all duration-600 ease-spring-soft origin-top"
                :class="selectedCategory?.id === category.id ? 'sub-options-expanded' : 'sub-options-collapsed'">
             <button
               v-for="(sub, subIndex) in category.subOptions"
               :key="sub.name"
               @click.stop="handleSelectSubOption(sub, category)"
               class="px-2 md:px-3 py-2 md:py-2 text-[11px] md:text-xs text-left rounded-lg flex items-center justify-between group/sub backdrop-blur-sm apple-button sub-option-btn"
-              :style="{ animationDelay: `${subIndex * 40}ms` }"
+              :style="isMobile ? {} : { animationDelay: `${subIndex * 40}ms` }"
               :class="[
                 currentSubOption?.name === sub.name
                   ? 'bg-violin-gold/20 text-violin-gold border border-violin-gold/30 shadow-sm shadow-violin-gold/20 scale-105'
                   : 'bg-black/20 text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10',
-                selectedCategory?.id === category.id ? 'animate-spring-in' : ''
+                !isMobile && selectedCategory?.id === category.id ? 'animate-spring-in' : ''
               ]">
               <span class="truncate">{{ sub.name }}</span>
               <span v-if="currentSubOption?.name === sub.name" class="w-1.5 h-1.5 rounded-full bg-violin-gold animate-breathe-soft shrink-0 ml-1"></span>
