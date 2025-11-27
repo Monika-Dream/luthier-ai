@@ -66,7 +66,7 @@ const handleCardMouseMove = (event) => {
       </div>
 
       <!-- 分类卡片列表 - 添加错落进入效果 -->
-      <div class="flex flex-col gap-3 md:gap-4 pb-10">
+      <div class="flex flex-col gap-3 md:gap-4 pb-10" style="max-width: 23rem;">
         <div v-for="(category, index) in categories"
              :key="category.id"
              @click="handleSelectCategory(category)"

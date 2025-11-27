@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full flex animate-blur-in relative overflow-hidden">
+  <div class="w-full h-full flex animate-blur-in relative">
     <!-- 主内容区 -->
     <div class="flex-1 flex flex-col items-center justify-center p-4 relative">
 

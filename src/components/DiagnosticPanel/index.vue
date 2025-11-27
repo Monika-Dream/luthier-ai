@@ -911,7 +911,7 @@ onUnmounted(() => {
             </div>
 
             <!-- 主内容区域 - 根据显示模式切换 -->
-            <div v-if="displayMode === 'tuner'" class="flex-1 flex items-center justify-center overflow-y-auto custom-scrollbar animate-blur-in">
+            <div v-if="displayMode === 'tuner'" class="flex-1 flex items-center justify-center custom-scrollbar animate-blur-in">
                 <!-- 调音器界面 -->
                 <TunerDisplay
                   :current-note="currentNote"
