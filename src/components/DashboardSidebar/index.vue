@@ -132,19 +132,15 @@ const handleCardMouseMove = (event) => {
             </div>
           </div>
 
-          <!-- 子选项网格 - 移动端使用更大的点击区域 -->
-          <div class="transition-all duration-600 ease-spring-soft origin-top"
-               :class="[
-                 selectedCategory?.id === category.id ? 'sub-options-expanded' : 'sub-options-collapsed',
-                 isMobile ? 'flex flex-col gap-2' : 'grid grid-cols-2 gap-2'
-               ]">
+          <!-- 子选项网格 - 移动端和桌面端都使用2x2网格 -->
+          <div class="grid grid-cols-2 gap-1.5 md:gap-2 transition-all duration-600 ease-spring-soft origin-top"
+               :class="selectedCategory?.id === category.id ? 'sub-options-expanded' : 'sub-options-collapsed'">
             <button
               v-for="(sub, subIndex) in category.subOptions"
               :key="sub.name"
               @click.stop="handleSelectSubOption(sub, category)"
-              class="text-left rounded-lg flex items-center justify-between group/sub backdrop-blur-sm apple-button sub-option-btn"
+              class="px-2.5 md:px-3 py-2.5 md:py-2 text-xs md:text-xs text-left rounded-lg flex items-center justify-between group/sub backdrop-blur-sm apple-button sub-option-btn"
               :class="[
-                isMobile ? 'px-3 py-3 text-sm' : 'px-3 py-2 text-xs',
                 currentSubOption?.name === sub.name
                   ? 'bg-violin-gold/20 text-violin-gold border border-violin-gold/30 shadow-sm shadow-violin-gold/20'
                   : 'bg-black/20 text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10',
@@ -154,18 +150,18 @@ const handleCardMouseMove = (event) => {
               <span class="truncate">{{ sub.name }}</span>
               <svg v-if="currentSubOption?.name !== sub.name"
                    xmlns="http://www.w3.org/2000/svg"
-                   :width="isMobile ? 16 : 14"
-                   :height="isMobile ? 16 : 14"
+                   width="14"
+                   height="14"
                    viewBox="0 0 24 24"
                    fill="none"
                    stroke="currentColor"
                    stroke-width="2"
                    stroke-linecap="round"
                    stroke-linejoin="round"
-                   class="shrink-0 ml-2 text-zinc-600 group-hover/sub:text-violin-gold transition-colors">
+                   class="shrink-0 ml-1 text-zinc-600 group-hover/sub:text-violin-gold transition-colors">
                 <polyline points="9 18 15 12 9 6"></polyline>
               </svg>
-              <span v-else class="w-2 h-2 rounded-full bg-violin-gold animate-breathe-soft shrink-0 ml-2"></span>
+              <span v-else class="w-1.5 h-1.5 rounded-full bg-violin-gold animate-breathe-soft shrink-0 ml-1"></span>
             </button>
           </div>
         </div>

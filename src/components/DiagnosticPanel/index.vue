@@ -52,7 +52,7 @@ const props = defineProps({
   isMobile: Boolean
 })
 
-const emit = defineEmits(['close-panel'])
+const emit = defineEmits(['close-panel', 'select-sub-option'])
 
 // 状态管理
 const mode = ref('mic')
@@ -864,7 +864,7 @@ onUnmounted(() => {
     class="flex-1 relative bg-violin-charcoal/40 border border-white/5 rounded-xl md:rounded-2xl flex items-center justify-center overflow-hidden backdrop-blur-md shadow-2xl sidebar-transition z-10 grid-bg panel-container"
     :class="[
       focusMode ? 'shadow-[0_0_100px_rgba(0,0,0,0.8)] border-violin-gold/20 focus-mode-panel' : 'animate-blur-in',
-      isMobile ? 'min-h-[calc(100vh-180px)]' : 'min-h-[400px]'
+      isMobile ? 'min-h-[calc(100vh-180px)] pb-20' : 'min-h-[400px]'
     ]"
   >
     <!-- 背景渐变 -->
@@ -905,6 +905,21 @@ onUnmounted(() => {
                         {{ currentSubOption ? currentSubOption.name : selectedCategory.title }}
                     </h3>
                 </div>
+
+                <!-- 移动端子选项网格 -->
+                <div v-if="isMobile && selectedCategory?.subOptions" class="grid grid-cols-2 gap-0.5 shrink-0 w-[140px]">
+                  <button
+                    v-for="sub in selectedCategory.subOptions"
+                    :key="sub.name"
+                    @click="$emit('select-sub-option', sub)"
+                    class="h-5 px-1.5 text-[9px] rounded transition-all duration-200 active:scale-95 truncate"
+                    :class="currentSubOption?.name === sub.name
+                      ? 'bg-violin-gold text-black font-medium'
+                      : 'bg-white/5 text-zinc-400 border border-white/10'">
+                    {{ sub.name }}
+                  </button>
+                </div>
+
                 <!-- 关闭按钮 - 移动端隐藏（使用顶部返回按钮） -->
                 <button v-if="!isMobile" @click="handleClose"
                         class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-zinc-500 hover:text-white transition-all duration-400 ease-apple-spring hover:rotate-90 hover:scale-110 shrink-0 apple-button">
