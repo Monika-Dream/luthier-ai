@@ -3,7 +3,8 @@ const props = defineProps({
   categories: Array,
   selectedCategory: Object,
   currentSubOption: Object,
-  focusMode: Boolean
+  focusMode: Boolean,
+  isMobile: Boolean
 })
 
 const emit = defineEmits(['select-category', 'select-sub-option'])
@@ -50,35 +51,42 @@ const handleCardMouseMove = (event) => {
 
 <template>
   <section
-    class="flex flex-col gap-4 md:gap-6 overflow-y-auto overflow-x-hidden sidebar-transition relative z-20 custom-scrollbar"
+    class="flex flex-col gap-3 md:gap-6 overflow-y-auto overflow-x-hidden sidebar-transition relative z-20 custom-scrollbar"
     :class="[
       focusMode
         ? 'max-w-0 opacity-0 px-0 w-0 pointer-events-none'
-        : 'w-full md:w-80 lg:w-96 shrink-0 opacity-100 animate-apple-fade-in'
+        : isMobile
+          ? 'w-full opacity-100'
+          : 'w-full md:w-80 lg:w-96 shrink-0 opacity-100 animate-apple-fade-in'
     ]"
   >
     <!-- 固定宽度容器防止内容挤压 -->
-    <div :class="focusMode ? 'w-0' : 'w-full md:w-80 lg:w-96'">
+    <div :class="focusMode ? 'w-0' : isMobile ? 'w-full' : 'w-full md:w-80 lg:w-96'">
       <!-- 标题区域 - 带有苹果风格的模糊淡入 -->
       <div class="mb-4 md:mb-6 animate-blur-in">
-        <h2 class="font-serif text-2xl md:text-3xl lg:text-4xl mb-2 md:mb-3 text-white bg-gradient-to-r from-white to-violet-100 bg-clip-text text-transparent">演奏技法剖析</h2>
-        <p class="text-zinc-500 text-xs md:text-sm font-light leading-relaxed">AI 将综合视觉与听觉数据，为您生成精准的演奏建议。</p>
+        <h2 class="font-serif text-xl md:text-3xl lg:text-4xl mb-2 md:mb-3 text-white bg-gradient-to-r from-white to-violet-100 bg-clip-text text-transparent">
+          {{ isMobile ? '选择功能' : '演奏技法剖析' }}
+        </h2>
+        <p class="text-zinc-500 text-xs md:text-sm font-light leading-relaxed">
+          {{ isMobile ? '请选择您想要使用的功能模块' : 'AI 将综合视觉与听觉数据，为您生成精准的演奏建议。' }}
+        </p>
       </div>
 
-      <!-- 分类卡片列表 - 添加错落进入效果 -->
-      <div class="flex flex-col gap-3 md:gap-4 pb-10" style="max-width: 23rem;">
+      <!-- 分类卡片列表 - 移动端使用更紧凑的布局 -->
+      <div class="flex flex-col gap-2.5 md:gap-4 pb-10" :class="isMobile ? '' : 'max-w-[23rem]'">
         <div v-for="(category, index) in categories"
              :key="category.id"
              @click="handleSelectCategory(category)"
-             @mouseenter="handleCardHover($event, true)"
-             @mouseleave="handleCardHover($event, false)"
-             class="group relative overflow-hidden p-4 md:p-5 rounded-xl border cursor-pointer spring-card ripple-container animate-stagger-in"
-             :style="{ animationDelay: `${index * 60}ms` }"
+             @mouseenter="!isMobile && handleCardHover($event, true)"
+             @mouseleave="!isMobile && handleCardHover($event, false)"
+             class="group relative overflow-hidden p-3.5 md:p-5 rounded-xl border cursor-pointer ripple-container animate-stagger-in"
              :class="[
+                isMobile ? 'spring-card-mobile' : 'spring-card',
                 selectedCategory?.id === category.id
                   ? 'bg-gradient-to-r from-violin-gold/10 to-transparent border-violin-gold/50 shadow-[0_0_30px_-10px_rgba(212,175,55,0.15)] scale-[1.02] glow-pulse-soft'
                   : 'bg-zinc-900/40 border-white/5 hover:border-zinc-700 hover:bg-zinc-800/40'
-             ]">
+             ]"
+             :style="{ animationDelay: `${index * 60}ms` }">
 
           <!-- 激活指示条 - 带有更流畅的动画 -->
           <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-violin-gold to-yellow-500 transition-all duration-500 ease-apple-spring"
@@ -89,16 +97,19 @@ const handleCardMouseMove = (event) => {
           <!-- 背景光效 - 更细腻的渐变 -->
           <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
 
-          <!-- 高亮扫光效果 -->
-          <div class="absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none highlight-sweep-card"></div>
+          <!-- 高亮扫光效果 - 仅桌面端 -->
+          <div v-if="!isMobile" class="absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none highlight-sweep-card"></div>
 
           <!-- 卡片主内容 -->
           <div class="flex justify-between items-center relative z-10">
             <div class="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
               <!-- 图标 - 带弹性动画 -->
-              <div class="transition-all duration-500 ease-apple-spring shrink-0 icon-hover-bounce"
-                   :class="selectedCategory?.id === category.id ? 'text-violin-gold scale-110' : 'text-zinc-500 group-hover:text-violin-gold group-hover:scale-110'">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <div class="transition-all duration-500 ease-apple-spring shrink-0"
+                   :class="[
+                     isMobile ? '' : 'icon-hover-bounce',
+                     selectedCategory?.id === category.id ? 'text-violin-gold scale-110' : 'text-zinc-500 group-hover:text-violin-gold group-hover:scale-110'
+                   ]">
+                <svg xmlns="http://www.w3.org/2000/svg" :width="isMobile ? 20 : 20" :height="isMobile ? 20 : 20" class="md:w-6 md:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                   <path :d="category.iconPath"></path>
                   <circle v-if="category.extraIcon" cx="12" cy="12" r="2"></circle>
                 </svg>
@@ -109,7 +120,7 @@ const handleCardMouseMove = (event) => {
                     :class="selectedCategory?.id === category.id ? 'text-white' : 'text-zinc-300 group-hover:text-white'">
                   {{ category.title }}
                 </h3>
-                <p class="text-[10px] md:text-xs text-zinc-500 mt-1 font-light tracking-wide transition-colors duration-400 ease-apple-ease group-hover:text-zinc-400">{{ category.desc }}</p>
+                <p class="text-[10px] md:text-xs text-zinc-500 mt-0.5 md:mt-1 font-light tracking-wide transition-colors duration-400 ease-apple-ease group-hover:text-zinc-400 truncate">{{ category.desc }}</p>
               </div>
             </div>
             <!-- 箭头 - 带弹性过渡 -->
@@ -121,14 +132,14 @@ const handleCardMouseMove = (event) => {
             </div>
           </div>
 
-          <!-- 子选项网格 - 改用更流畅的展开动画 -->
-          <div class="grid grid-cols-2 gap-2 overflow-hidden transition-all duration-600 ease-spring-soft origin-top"
+          <!-- 子选项网格 - 移动端使用更紧凑的间距 -->
+          <div class="grid grid-cols-2 gap-1.5 md:gap-2 overflow-hidden transition-all duration-600 ease-spring-soft origin-top"
                :class="selectedCategory?.id === category.id ? 'sub-options-expanded' : 'sub-options-collapsed'">
             <button
               v-for="(sub, subIndex) in category.subOptions"
               :key="sub.name"
               @click.stop="handleSelectSubOption(sub, category)"
-              class="px-2 md:px-3 py-1.5 md:py-2 text-[10px] md:text-xs text-left rounded flex items-center justify-between group/sub backdrop-blur-sm apple-button sub-option-btn"
+              class="px-2 md:px-3 py-2 md:py-2 text-[11px] md:text-xs text-left rounded-lg flex items-center justify-between group/sub backdrop-blur-sm apple-button sub-option-btn"
               :style="{ animationDelay: `${subIndex * 40}ms` }"
               :class="[
                 currentSubOption?.name === sub.name
@@ -238,6 +249,29 @@ const handleCardMouseMove = (event) => {
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+/* 移动端卡片触控优化 */
+.spring-card-mobile {
+  transition: transform 0.2s ease-out, background-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.spring-card-mobile:active {
+  transform: scale(0.98);
+  background-color: rgba(39, 39, 42, 0.6);
+}
+
+/* 移动端子选项按钮 */
+@media (max-width: 767px) {
+  .sub-option-btn {
+    min-height: 40px;
+    transition: all 0.2s ease-out;
+  }
+
+  .sub-option-btn:active {
+    transform: scale(0.95);
   }
 }
 </style>

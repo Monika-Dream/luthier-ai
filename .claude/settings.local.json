@@ -22,7 +22,8 @@
       "Bash(git push:*)",
       "Bash(dir \"D:\\PROJECT\\Luthier_AI\")",
       "Bash(dir:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "ask": []

@@ -48,7 +48,8 @@ const getMusicContent = async () => {
 const props = defineProps({
   selectedCategory: Object,
   currentSubOption: Object,
-  focusMode: Boolean
+  focusMode: Boolean,
+  isMobile: Boolean
 })
 
 const emit = defineEmits(['close-panel'])
@@ -860,8 +861,11 @@ onUnmounted(() => {
 
 <template>
   <section
-    class="flex-1 relative bg-violin-charcoal/40 border border-white/5 rounded-xl md:rounded-2xl flex items-center justify-center overflow-hidden backdrop-blur-md shadow-2xl sidebar-transition z-10 grid-bg min-h-[400px] panel-container"
-    :class="focusMode ? 'shadow-[0_0_100px_rgba(0,0,0,0.8)] border-violin-gold/20 focus-mode-panel' : 'animate-blur-in'"
+    class="flex-1 relative bg-violin-charcoal/40 border border-white/5 rounded-xl md:rounded-2xl flex items-center justify-center overflow-hidden backdrop-blur-md shadow-2xl sidebar-transition z-10 grid-bg panel-container"
+    :class="[
+      focusMode ? 'shadow-[0_0_100px_rgba(0,0,0,0.8)] border-violin-gold/20 focus-mode-panel' : 'animate-blur-in',
+      isMobile ? 'min-h-[calc(100vh-180px)]' : 'min-h-[400px]'
+    ]"
   >
     <!-- 背景渐变 -->
     <div class="absolute inset-0 bg-gradient-to-br from-violin-gold/5 via-transparent to-purple-500/5 opacity-20 pointer-events-none animate-pulse-slow"></div>
@@ -871,37 +875,38 @@ onUnmounted(() => {
 
     <transition name="apple-blur" mode="out-in">
         <!-- 待机状态 -->
-        <div v-if="!selectedCategory" class="text-center p-6 md:p-8 flex flex-col items-center gap-6 md:gap-8" key="standby">
+        <div v-if="!selectedCategory" class="text-center p-4 md:p-8 flex flex-col items-center gap-4 md:gap-8" key="standby">
             <div class="relative group cursor-default">
                 <div class="absolute inset-0 bg-violin-gold/10 rounded-full blur-2xl animate-breathe-soft"></div>
-                <div class="relative w-20 h-20 md:w-28 md:h-28 rounded-full border border-white/5 bg-gradient-to-br from-zinc-800/50 to-black/50 flex items-center justify-center backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] group-hover:border-violin-gold/30 transition-all duration-500 ease-apple-spring animate-float-slow group-hover:scale-110">
-                    <svg class="text-zinc-600 group-hover:text-violin-gold transition-all duration-500 ease-apple-spring group-hover:rotate-12" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round">
+                <div class="relative w-16 h-16 md:w-28 md:h-28 rounded-full border border-white/5 bg-gradient-to-br from-zinc-800/50 to-black/50 flex items-center justify-center backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] group-hover:border-violin-gold/30 transition-all duration-500 ease-apple-spring animate-float-slow group-hover:scale-110">
+                    <svg class="text-zinc-600 group-hover:text-violin-gold transition-all duration-500 ease-apple-spring group-hover:rotate-12 w-6 h-6 md:w-8 md:h-8" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.0" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
                     </svg>
                 </div>
             </div>
             <div class="animate-spring-in" style="animation-delay: 100ms">
-                <h3 class="font-serif text-2xl md:text-3xl text-zinc-200 mb-2 md:mb-3 tracking-wide bg-gradient-to-r from-zinc-200 to-violet-300 bg-clip-text text-transparent">诊断系统待机中</h3>
+                <h3 class="font-serif text-xl md:text-3xl text-zinc-200 mb-2 md:mb-3 tracking-wide bg-gradient-to-r from-zinc-200 to-violet-300 bg-clip-text text-transparent">诊断系统待机中</h3>
                 <p class="text-zinc-600 font-light text-xs md:text-sm max-w-xs mx-auto leading-relaxed">
-                    请选择左侧的功能模块<br>以启动对应的教学系统。
+                    {{ isMobile ? '请从首页选择功能模块' : '请选择左侧的功能模块以启动对应的教学系统。' }}
                 </p>
             </div>
         </div>
 
         <!-- 激活状态 -->
-        <div v-else class="w-full h-full p-4 md:p-8 lg:p-12 flex flex-col" key="active">
+        <div v-else class="w-full h-full p-3 md:p-8 lg:p-12 flex flex-col" key="active">
             <!-- 头部标题 -->
-            <div class="flex justify-between items-start mb-4 md:mb-6 border-b border-white/5 pb-4 md:pb-6 shrink-0 animate-spring-in">
-                <div class="min-w-0 flex-1 pr-4">
-                    <div class="text-violin-gold text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] mb-2 flex items-center gap-2">
+            <div class="flex justify-between items-start mb-3 md:mb-6 border-b border-white/5 pb-3 md:pb-6 shrink-0 animate-spring-in">
+                <div class="min-w-0 flex-1 pr-2 md:pr-4">
+                    <div class="text-violin-gold text-[8px] md:text-[10px] font-bold uppercase tracking-[0.15em] md:tracking-[0.2em] mb-1 md:mb-2 flex items-center gap-1.5 md:gap-2">
                         <span class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-violin-gold animate-breathe-soft"></span>
                         {{ displayMode.toUpperCase() }} MODE
                     </div>
-                    <h3 class="font-serif text-2xl md:text-3xl lg:text-5xl text-white tracking-tight truncate">
+                    <h3 class="font-serif text-xl md:text-3xl lg:text-5xl text-white tracking-tight truncate">
                         {{ currentSubOption ? currentSubOption.name : selectedCategory.title }}
                     </h3>
                 </div>
-                <button @click="handleClose"
+                <!-- 关闭按钮 - 移动端隐藏（使用顶部返回按钮） -->
+                <button v-if="!isMobile" @click="handleClose"
                         class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-zinc-500 hover:text-white transition-all duration-400 ease-apple-spring hover:rotate-90 hover:scale-110 shrink-0 apple-button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -911,7 +916,7 @@ onUnmounted(() => {
             </div>
 
             <!-- 主内容区域 - 根据显示模式切换 -->
-            <div v-if="displayMode === 'tuner'" class="flex-1 flex items-center justify-center custom-scrollbar animate-blur-in">
+            <div v-if="displayMode === 'tuner'" class="flex-1 flex items-center justify-center custom-scrollbar animate-blur-in overflow-y-auto">
                 <!-- 调音器界面 -->
                 <TunerDisplay
                   :current-note="currentNote"
@@ -922,6 +927,7 @@ onUnmounted(() => {
                   :tuner-notes="tunerNotes"
                   :tuning-standard="tuningStandard"
                   :tuning-standards="tuningStandards"
+                  :is-mobile="isMobile"
                   @toggle-tuner="startTuner"
                   @select-note="(note) => currentNote = note"
                   @select-tuning-standard="(standard) => tuningStandard = standard"
@@ -935,6 +941,7 @@ onUnmounted(() => {
                   :is-playing="isPlaying"
                   :current-beat="currentBeat"
                   :beats-per-measure="beatsPerMeasure"
+                  :is-mobile="isMobile"
                   @toggle-metronome="toggleMetronome"
                   @adjust-bpm="adjustBPM"
                   @set-bpm="setBPM"
@@ -988,18 +995,115 @@ onUnmounted(() => {
                 <PerformanceRecorder />
             </div>
 
-            <div v-else class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-8 min-h-0 overflow-hidden">
+            <div v-else class="flex-1 flex flex-col lg:grid lg:grid-cols-2 gap-3 md:gap-6 lg:gap-8 min-h-0 overflow-hidden">
                 <!-- 原始的摄像头/麦克风模式 -->
 
-                <!-- 左列：性能指标 -->
-                <div class="space-y-4 md:space-y-6 overflow-y-auto pr-2 custom-scrollbar animate-slide-up" style="animation-delay: 100ms">
+                <!-- 移动端：传感器视图面板优先显示 -->
+                <div v-if="isMobile" class="flex flex-col h-48 sm:h-64 bg-black/40 rounded-xl border border-zinc-800 overflow-hidden relative animate-slide-up backdrop-blur-sm shrink-0">
+                    <!-- 模式切换按钮 -->
+                    <div class="absolute top-2 left-2 z-30 flex gap-1.5 animate-slide-down" style="animation-delay: 300ms">
+                        <button @click="toggleMode('mic')"
+                                class="px-2.5 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider backdrop-blur-md transition-all duration-300 border active:scale-95"
+                                :class="mode === 'mic'
+                                    ? 'bg-violin-gold text-black border-violin-gold shadow-md shadow-violin-gold/30'
+                                    : 'bg-black/50 text-zinc-500 border-zinc-700'">
+                            Mic
+                        </button>
+                        <button @click="toggleMode('camera')"
+                                class="px-2.5 py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider backdrop-blur-md transition-all duration-300 border active:scale-95"
+                                :class="mode === 'camera'
+                                    ? 'bg-violin-gold text-black border-violin-gold shadow-md shadow-violin-gold/30'
+                                    : 'bg-black/50 text-zinc-500 border-zinc-700'">
+                            Camera
+                        </button>
+                    </div>
+
+                    <!-- 麦克风视图 -->
+                    <div v-if="mode === 'mic'"
+                         class="flex-1 relative flex items-end justify-center pb-4 cursor-pointer group"
+                         @click="toggleMic">
+
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none animate-fade-in" v-if="!isListening">
+                            <div class="text-center">
+                                <div class="w-12 h-12 mx-auto mb-2 rounded-full border border-zinc-700 flex items-center justify-center group-hover:border-violin-gold transition-all duration-500 group-hover:scale-110 animate-float">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" class="text-zinc-600 group-hover:text-violin-gold transition-all duration-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                        <line x1="12" y1="19" x2="12" y2="23"></line>
+                                        <line x1="8" y1="23" x2="16" y2="23"></line>
+                                    </svg>
+                                </div>
+                                <span class="text-zinc-600 text-[10px] font-mono uppercase tracking-widest group-hover:text-violin-gold transition-colors">点击激活麦克风</span>
+                            </div>
+                        </div>
+                        <!-- 可视化音频条 -->
+                        <div class="flex items-end gap-0.5 h-20 px-4 w-full justify-center">
+                            <div v-for="(val, i) in visualizerBars"
+                                 :key="i"
+                                 class="w-1 rounded-t-sm transition-all duration-50 bg-gradient-to-t from-violin-gold via-yellow-400 to-yellow-300 relative"
+                                 :style="{ height: Math.max(2, val) + '%', opacity: isListening ? 0.9 : 0.2 }">
+                                 <div v-if="isListening && val > 40" class="absolute top-0 left-0 right-0 h-1 bg-white rounded-full animate-pulse"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 摄像头视图 -->
+                    <div v-else class="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
+                        <video ref="videoElement"
+                               autoplay
+                               playsinline
+                               muted
+                               class="absolute inset-0 w-full h-full object-cover opacity-80 transition-opacity duration-500 gpu-accelerate"
+                               :class="{ 'hidden': !isCameraActive }">
+                        </video>
+
+                        <!-- 摄像头激活按钮 -->
+                        <div v-if="!isCameraActive"
+                             class="text-center cursor-pointer z-20 group animate-fade-in"
+                             @click="startCamera">
+                            <div class="w-12 h-12 rounded-full border border-zinc-700 flex items-center justify-center mx-auto mb-2 group-hover:border-violin-gold group-hover:text-violin-gold text-zinc-500 transition-all duration-500 group-hover:scale-110 animate-float">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                    <circle cx="12" cy="13" r="4"></circle>
+                                </svg>
+                            </div>
+                            <p class="text-[10px] text-zinc-500 font-mono uppercase tracking-wide group-hover:text-violin-gold transition-colors">Activate Vision</p>
+                        </div>
+
+                        <!-- 摄像头激活后的覆盖层 -->
+                        <div v-else class="absolute inset-0 z-10 pointer-events-none animate-fade-in">
+                            <div class="absolute top-2 right-2 text-[9px] font-mono text-green-500 bg-black/60 px-2 py-1 rounded border border-green-500/30 flex items-center gap-1 animate-pulse-subtle backdrop-blur-sm">
+                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                                AI TRACKING
+                            </div>
+
+                            <!-- 倒计时显示 -->
+                            <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex flex-col items-center">
+                                <div v-if="isAnalyzingPose" class="flex items-center gap-1.5 bg-violet-600/80 backdrop-blur-sm px-2 py-1 rounded-full">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></div>
+                                    <span class="text-[9px] text-white font-medium">AI 分析中...</span>
+                                </div>
+                                <div v-else class="flex flex-col items-center">
+                                    <div class="text-xl font-mono font-bold text-violin-gold/90 tabular-nums"
+                                         :class="poseAnalysisCountdown <= 3 ? 'animate-pulse text-yellow-400' : ''">
+                                        {{ poseAnalysisCountdown }}
+                                    </div>
+                                    <div class="text-[8px] text-zinc-400">秒后分析</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 性能指标和AI反馈 -->
+                <div class="space-y-3 md:space-y-6 overflow-y-auto pr-1 md:pr-2 custom-scrollbar animate-slide-up flex-1" style="animation-delay: 100ms">
                     <!-- 指标条 -->
                     <div v-for="(tag, index) in (currentSubOption ? currentSubOption.metrics : selectedCategory.tags)"
                          :key="index"
                          class="group animate-fade-in"
                          :style="{ animationDelay: `${index * 50 + 200}ms` }">
-                        <div class="flex justify-between items-end mb-2">
-                            <span class="text-xs md:text-sm text-zinc-400 group-hover:text-violin-gold transition-all duration-300 font-light">{{ tag }}</span>
+                        <div class="flex justify-between items-end mb-1.5 md:mb-2">
+                            <span class="text-[11px] md:text-sm text-zinc-400 group-hover:text-violin-gold transition-all duration-300 font-light">{{ tag }}</span>
                             <span class="text-[10px] md:text-xs font-mono text-zinc-600 transition-all duration-300 group-hover:text-violin-gold/60">
                                 {{ getMetricValue(index) }}%
                             </span>
@@ -1011,7 +1115,7 @@ onUnmounted(() => {
                         </div>
                     </div>
 
-                    <!-- AI 诊断报告卡片 - 使用新组件 -->
+                    <!-- AI 诊断报告卡片 -->
                     <AiFeedbackDisplay
                       :current-feedback="aiFeedbackText"
                       :history="feedbackHistory"
@@ -1020,8 +1124,8 @@ onUnmounted(() => {
                     />
                 </div>
 
-                <!-- 右列：传感器视图面板 -->
-                <div class="flex flex-col h-full bg-black/40 rounded-xl border border-zinc-800 overflow-hidden relative min-h-[300px] animate-slide-up backdrop-blur-sm" style="animation-delay: 200ms">
+                <!-- 桌面端：传感器视图面板 -->
+                <div v-if="!isMobile" class="flex flex-col h-full bg-black/40 rounded-xl border border-zinc-800 overflow-hidden relative min-h-[300px] animate-slide-up backdrop-blur-sm" style="animation-delay: 200ms">
                     <!-- 模式切换按钮 -->
                     <div class="absolute top-3 md:top-4 left-3 md:left-4 z-30 flex gap-2 animate-slide-down" style="animation-delay: 300ms">
                         <button @click="toggleMode('mic')"
@@ -1093,8 +1197,7 @@ onUnmounted(() => {
                             <div v-for="(val, i) in visualizerBars"
                                  :key="i"
                                  class="w-1 md:w-1.5 rounded-t-sm transition-all duration-50 bg-gradient-to-t from-violin-gold via-yellow-400 to-yellow-300 relative"
-                                 :style="{ height: Math.max(2, val) + '%', opacity: isListening ? 0.9 : 0.2 }"
-                                 :class="isListening ? '' : ''">
+                                 :style="{ height: Math.max(2, val) + '%', opacity: isListening ? 0.9 : 0.2 }">
                                  <div v-if="isListening && val > 40" class="absolute top-0 left-0 right-0 h-1 bg-white rounded-full animate-pulse"></div>
                             </div>
                         </div>
@@ -1125,7 +1228,6 @@ onUnmounted(() => {
 
                         <!-- 摄像头激活后的覆盖层 -->
                         <div v-else class="absolute inset-0 z-10 pointer-events-none animate-fade-in">
-                            <!-- 扫描线已移除 -->
                             <div class="absolute top-3 md:top-4 right-3 md:right-4 text-[9px] md:text-[10px] font-mono text-green-500 bg-black/60 px-2 py-1 rounded border border-green-500/30 flex items-center gap-2 animate-pulse-subtle backdrop-blur-sm">
                                 <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
                                 AI TRACKING

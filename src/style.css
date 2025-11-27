@@ -528,6 +528,131 @@ body.focus-active::after {
 }
 
 /* =========================================
+   移动端优化样式
+   ========================================= */
+
+/* 移动端触控优化 */
+@media (max-width: 767px) {
+    /* 禁用触控高亮 */
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* 优化按钮触控区域 */
+    button, .apple-button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* 移动端滚动优化 */
+    .custom-scrollbar {
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* 移动端网格背景简化 - 减少 GPU 负担 */
+    body::before {
+        background-image:
+            linear-gradient(90deg, rgba(212, 175, 55, 0.25) 1px, transparent 1px),
+            linear-gradient(rgba(212, 175, 55, 0.25) 1px, transparent 1px);
+        background-size: 20px 20px;
+        animation: none;
+    }
+
+    /* 移动端减少光晕效果 */
+    body::after {
+        background:
+            radial-gradient(ellipse at 20% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 40%),
+            radial-gradient(ellipse at 80% 80%, rgba(212, 175, 55, 0.04) 0%, transparent 40%);
+        animation: none;
+    }
+
+    /* 移动端弹性卡片简化 */
+    .spring-card {
+        transition: transform 0.2s ease-out, background-color 0.2s ease;
+    }
+
+    .spring-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .spring-card:active {
+        transform: scale(0.98);
+    }
+
+    /* 移动端文字大小优化 */
+    .font-serif {
+        letter-spacing: 0.01em;
+    }
+
+    /* 移动端间距优化 */
+    .gap-6 {
+        gap: 1rem;
+    }
+
+    .gap-8 {
+        gap: 1.25rem;
+    }
+
+    /* 移动端圆角优化 */
+    .rounded-2xl {
+        border-radius: 0.75rem;
+    }
+
+    /* 安全区域适配 */
+    .safe-area-top {
+        padding-top: env(safe-area-inset-top, 0);
+    }
+
+    .safe-area-bottom {
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    .safe-area-left {
+        padding-left: env(safe-area-inset-left, 0);
+    }
+
+    .safe-area-right {
+        padding-right: env(safe-area-inset-right, 0);
+    }
+}
+
+/* 小屏手机额外优化 (< 375px) */
+@media (max-width: 374px) {
+    body {
+        font-size: 14px;
+    }
+
+    .text-xs {
+        font-size: 0.7rem;
+    }
+
+    .text-sm {
+        font-size: 0.8rem;
+    }
+}
+
+/* 横屏模式优化 */
+@media (max-width: 767px) and (orientation: landscape) {
+    .h-screen {
+        min-height: 100vh;
+        min-height: -webkit-fill-available;
+    }
+}
+
+/* 高对比度/深色模式增强 */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #030303;
+    }
+}
+
+/* =========================================
    Apple/Google 风格高级动画系统
    ========================================= */
 
