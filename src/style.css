@@ -1,0 +1,1235 @@
+/* 字体引入 */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    background-color: #050505;
+    color: #e4e4e7;
+    font-family: 'Inter', sans-serif;
+    /* 防止背景特效导致滚动条跳动 */
+    overflow-x: hidden;
+    /* 开启硬件加速 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* =========================================
+   核心视觉特效 (高级流光背景网格)
+   ========================================= */
+
+/* 1. 动态流光网格背景 - 默认金色主题 */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    /* 双层渐变网格，创造深度感 */
+    background-image:
+        /* 主网格线 - 带渐变色 */
+        linear-gradient(90deg, rgba(212, 175, 55, 0.4) 1px, transparent 1px),
+        linear-gradient(rgba(212, 175, 55, 0.4) 1px, transparent 1px),
+        /* 次网格线 - 更细更暗 */
+        linear-gradient(90deg, rgba(212, 175, 55, 0.1) 0.5px, transparent 0.5px),
+        linear-gradient(rgba(212, 175, 55, 0.1) 0.5px, transparent 0.5px);
+    background-size:
+        24px 24px,
+        24px 24px,
+        6px 6px,
+        6px 6px;
+    background-position:
+        0 0,
+        0 0,
+        0 0,
+        0 0;
+
+    /* 高级遮罩：创造流光扩散效果 */
+    mask-image:
+        radial-gradient(ellipse 50% 50% at 15% 15%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 25%, transparent 50%),
+        radial-gradient(ellipse 45% 45% at 85% 85%, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 30%, transparent 55%),
+        radial-gradient(circle at 50% 50%, transparent 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.05) 100%);
+    -webkit-mask-image:
+        radial-gradient(ellipse 50% 50% at 15% 15%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 25%, transparent 50%),
+        radial-gradient(ellipse 45% 45% at 85% 85%, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 30%, transparent 55%),
+        radial-gradient(circle at 50% 50%, transparent 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.05) 100%);
+    mask-composite: add;
+    -webkit-mask-composite: source-over;
+
+    /* 流光动画效果 - 使用 GPU 加速 */
+    animation: flowGrid 20s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 1;
+    filter: contrast(1.1);
+    transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* GPU 硬件加速 */
+    will-change: background-position, transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    contain: strict;
+}
+
+/* 专注模式蓝紫色网格层 - 使用独立元素 */
+body.focus-active::before {
+    opacity: 0;
+}
+
+/* 专注模式网格 - 使用 body 上的额外伪元素通过 wrapper */
+body.focus-active .focus-grid-overlay {
+    opacity: 1;
+}
+
+/* 2. 多层环境光晕效果 */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        /* 主光晕 */
+        radial-gradient(ellipse at 20% 20%, rgba(212, 175, 55, 0.08) 0%, transparent 40%),
+        radial-gradient(ellipse at 80% 80%, rgba(212, 175, 55, 0.06) 0%, transparent 40%),
+        /* 辅助光晕 */
+        radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 100% 50%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+        /* 对角线渐变 */
+        linear-gradient(135deg, rgba(212, 175, 55, 0.02) 0%, transparent 30%);
+    pointer-events: none;
+    z-index: 1;
+    animation: glowPulse 8s ease-in-out infinite;
+    opacity: 1;
+    transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* GPU 硬件加速 */
+    will-change: opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    contain: strict;
+}
+
+/* 专注模式激活态：金色光晕淡出 */
+body.focus-active::after {
+    opacity: 0;
+}
+
+/* 专注模式蓝紫色网格层 */
+.focus-grid-layer {
+    background-image:
+        linear-gradient(90deg, rgba(59, 130, 246, 0.5) 1px, transparent 1px),
+        linear-gradient(rgba(147, 51, 234, 0.5) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0.5px, transparent 0.5px),
+        linear-gradient(rgba(147, 51, 234, 0.15) 0.5px, transparent 0.5px);
+    background-size:
+        30px 30px,
+        30px 30px,
+        10px 10px,
+        10px 10px;
+    mask-image:
+        radial-gradient(ellipse 50% 50% at 15% 15%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 25%, transparent 50%),
+        radial-gradient(ellipse 45% 45% at 85% 85%, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 30%, transparent 55%),
+        radial-gradient(circle at 50% 50%, transparent 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.05) 100%);
+    -webkit-mask-image:
+        radial-gradient(ellipse 50% 50% at 15% 15%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 25%, transparent 50%),
+        radial-gradient(ellipse 45% 45% at 85% 85%, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 30%, transparent 55%),
+        radial-gradient(circle at 50% 50%, transparent 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.05) 100%);
+    mask-composite: add;
+    -webkit-mask-composite: source-over;
+    filter: blur(0.2px) saturate(1.2);
+    animation: flowGridFocus 15s ease-in-out infinite;
+    /* GPU 硬件加速 */
+    will-change: background-position, transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    contain: strict;
+}
+
+/* 专注模式蓝紫色光晕层 */
+.focus-glow-layer {
+    background:
+        /* 鱼眼效果：中心高亮，边缘暗化 */
+        radial-gradient(ellipse at center,
+            transparent 25%,
+            rgba(0, 0, 0, 0.05) 45%,
+            rgba(0, 0, 0, 0.15) 65%,
+            rgba(0, 0, 0, 0.25) 100%),
+        /* 蓝紫色光晕效果 */
+        radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 40%),
+        radial-gradient(ellipse at 80% 80%, rgba(147, 51, 234, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.04) 0%, transparent 50%),
+        radial-gradient(circle at 100% 50%, rgba(147, 51, 234, 0.04) 0%, transparent 50%),
+        linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, transparent 30%);
+    animation: glowPulseFocus 6s ease-in-out infinite;
+    /* GPU 硬件加速 */
+    will-change: opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    contain: strict;
+}
+
+/* 流光动画关键帧 */
+@keyframes flowGrid {
+    0%, 100% {
+        background-position:
+            0 0,
+            0 0,
+            0 0,
+            0 0;
+        transform: perspective(1000px) rotateX(0deg) scale(1);
+    }
+    25% {
+        background-position:
+            12px 0,
+            0 12px,
+            3px 0,
+            0 3px;
+        transform: perspective(1000px) rotateX(1deg) scale(1.01);
+    }
+    50% {
+        background-position:
+            24px 12px,
+            12px 24px,
+            6px 3px,
+            3px 6px;
+        transform: perspective(1000px) rotateX(0deg) scale(1.02);
+    }
+    75% {
+        background-position:
+            12px 24px,
+            24px 12px,
+            3px 6px,
+            6px 3px;
+        transform: perspective(1000px) rotateX(-1deg) scale(1.01);
+    }
+}
+
+@keyframes flowGridFocus {
+    0%, 100% {
+        background-position:
+            0 0,
+            0 0,
+            0 0,
+            0 0;
+        transform: perspective(1200px) rotateY(0deg) scale(1);
+    }
+    50% {
+        background-position:
+            -30px 15px,
+            15px -30px,
+            -10px 5px,
+            5px -10px;
+        transform: perspective(1200px) rotateY(2deg) scale(1.03);
+    }
+}
+
+@keyframes glowPulse {
+    0%, 100% {
+        opacity: 1;
+        filter: blur(0px);
+    }
+    50% {
+        opacity: 0.8;
+        filter: blur(1px);
+    }
+}
+
+@keyframes glowPulseFocus {
+    0%, 100% {
+        opacity: 1;
+        filter: blur(0px) saturate(1);
+    }
+    50% {
+        opacity: 0.9;
+        filter: blur(2px) saturate(1.2);
+    }
+}
+
+/* 确保 Vue 应用内容在背景之上 */
+#app {
+    position: relative;
+    z-index: 2;
+}
+
+/* =========================================
+   GPU 加速工具类
+   ========================================= */
+
+/* 强制 GPU 加速 */
+.gpu-accelerate {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+    will-change: transform;
+}
+
+/* 仅动画时启用 GPU */
+.gpu-on-animate {
+    will-change: auto;
+}
+
+.gpu-on-animate:hover,
+.gpu-on-animate:focus,
+.gpu-on-animate:active,
+.gpu-on-animate.animating {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+}
+
+/* 渲染优化 - 独立渲染层 */
+.render-layer {
+    contain: layout style paint;
+    isolation: isolate;
+}
+
+/* 高性能滚动容器 */
+.scroll-optimized {
+    will-change: scroll-position;
+    -webkit-overflow-scrolling: touch;
+    overflow-anchor: none;
+}
+
+/* =========================================
+   通用组件样式
+   ========================================= */
+
+/* 自定义滚动条 - 更流畅的交互 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(10, 10, 10, 0.5);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #444, #333);
+    border-radius: 4px;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to bottom, #d4af37, #b8941f);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+/* Vue 路由/组件过渡动画 - 更优雅的进出效果 */
+.fade-enter-active {
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.fade-leave-active {
+    transition: all 0.4s cubic-bezier(0.55, 0.085, 0.68, 0.53);
+}
+.fade-enter-from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+    filter: blur(2px);
+}
+.fade-leave-to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+    filter: blur(1px);
+}
+
+/* 侧边栏收缩动画 - 更流畅的过渡 */
+.sidebar-transition {
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* 扫描线动画类 - 更柔和的扫描效果 */
+.scan-line {
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(212, 175, 55, 0.3),
+        rgba(212, 175, 55, 0.6),
+        rgba(212, 175, 55, 0.3),
+        transparent
+    );
+    height: 15%;
+    width: 100%;
+    position: absolute;
+    animation: scan 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+    pointer-events: none;
+    filter: blur(0.5px);
+}
+
+/* 组件内部备用网格 - 更精致的网格效果 */
+.grid-bg {
+    position: relative;
+    background-image:
+        /* 主网格 */
+        linear-gradient(rgba(212, 175, 55, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212, 175, 55, 0.02) 1px, transparent 1px),
+        /* 细网格 */
+        linear-gradient(rgba(212, 175, 55, 0.01) 0.5px, transparent 0.5px),
+        linear-gradient(90deg, rgba(212, 175, 55, 0.01) 0.5px, transparent 0.5px);
+    background-size:
+        60px 60px,
+        60px 60px,
+        12px 12px,
+        12px 12px;
+    background-position:
+        0 0,
+        0 0,
+        0 0,
+        0 0;
+    animation: gridMove 30s linear infinite;
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* 新增：光泽扫过效果 */
+.shine-effect {
+    position: relative;
+    overflow: hidden;
+}
+
+.shine-effect::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        105deg,
+        transparent 40%,
+        rgba(212, 175, 55, 0.1) 50%,
+        transparent 60%
+    );
+    animation: shine 3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+/* 新增：悬浮呼吸效果 */
+.breathe {
+    animation: breathe 4s ease-in-out infinite;
+}
+
+/* 新增：流畅悬停效果 */
+.smooth-hover {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.smooth-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.15);
+}
+
+/* 新增动画关键帧 */
+@keyframes gridMove {
+    0% {
+        background-position:
+            0 0,
+            0 0,
+            0 0,
+            0 0;
+    }
+    100% {
+        background-position:
+            60px 60px,
+            -60px -60px,
+            12px 12px,
+            -12px -12px;
+    }
+}
+
+@keyframes shine {
+    0%, 100% {
+        transform: translateX(-100%) translateY(-100%) rotate(30deg);
+    }
+    50% {
+        transform: translateX(100%) translateY(100%) rotate(30deg);
+    }
+}
+
+@keyframes breathe {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.02);
+        opacity: 0.9;
+    }
+}
+
+/* 增强扫描动画 */
+@keyframes scan {
+    0% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(500%);
+        opacity: 0;
+    }
+}
+
+/* 鱼眼效果动画 */
+@keyframes fisheyePulse {
+    0%, 100% {
+        transform: scale(1) perspective(1200px) rotateX(0deg);
+    }
+    25% {
+        transform: scale(1.03) perspective(1200px) rotateX(2deg);
+    }
+    50% {
+        transform: scale(1.05) perspective(1200px) rotateX(-2deg);
+    }
+    75% {
+        transform: scale(1.02) perspective(1200px) rotateX(1deg);
+    }
+}
+
+/* 鱼眼扭曲动画 */
+@keyframes fisheyeDistortion {
+    0%, 100% {
+        transform: scale(1);
+        filter: blur(0px);
+    }
+    50% {
+        transform: scale(1.01);
+        filter: blur(0.2px);
+    }
+}
+
+/* 面板扩大动画改进 */
+.sidebar-transition {
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform-origin: center;
+}
+
+/* 专注模式下的面板缩放 */
+.focus-mode-panel {
+    animation: panelExpand 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    transform-origin: center;
+}
+
+@keyframes panelExpand {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.02);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar-transition {
+        transition: all 0.3s ease;
+    }
+}
+
+/* =========================================
+   Apple/Google 风格高级动画系统
+   ========================================= */
+
+/* 1. 苹果风格 - 模糊过渡动画 */
+.apple-blur-transition {
+    transition: all 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.apple-blur-transition:hover {
+    transform: scale(1.02);
+    filter: brightness(1.05);
+}
+
+.apple-blur-transition:active {
+    transform: scale(0.98);
+    filter: brightness(0.95);
+}
+
+/* 2. Material Design 涟漪效果 */
+.ripple-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple-container::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                height 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.ripple-container:active::after {
+    width: 300%;
+    height: 300%;
+    opacity: 1;
+}
+
+/* 3. 弹性卡片效果 */
+.spring-card {
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+}
+
+.spring-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25),
+                0 0 30px rgba(212, 175, 55, 0.1);
+}
+
+.spring-card:active {
+    transform: translateY(-2px) scale(0.98);
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 4. 错落进入动画（stagger effect） */
+.stagger-container > * {
+    opacity: 0;
+    animation: staggerFadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.stagger-container > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-container > *:nth-child(2) { animation-delay: 50ms; }
+.stagger-container > *:nth-child(3) { animation-delay: 100ms; }
+.stagger-container > *:nth-child(4) { animation-delay: 150ms; }
+.stagger-container > *:nth-child(5) { animation-delay: 200ms; }
+.stagger-container > *:nth-child(6) { animation-delay: 250ms; }
+.stagger-container > *:nth-child(7) { animation-delay: 300ms; }
+.stagger-container > *:nth-child(8) { animation-delay: 350ms; }
+.stagger-container > *:nth-child(9) { animation-delay: 400ms; }
+.stagger-container > *:nth-child(10) { animation-delay: 450ms; }
+
+@keyframes staggerFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* 5. 苹果风格按钮交互 */
+.apple-button {
+    position: relative;
+    transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+    transform-origin: center;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+.apple-button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        transparent 50%,
+        rgba(0, 0, 0, 0.1) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.apple-button:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
+.apple-button:hover::before {
+    opacity: 1;
+}
+
+.apple-button:active {
+    transform: scale(0.95);
+    filter: brightness(0.9);
+    transition: transform 0.1s ease-out;
+}
+
+/* 6. 流畅展开/折叠动画 */
+.expand-collapse {
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                padding 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.expand-collapse.collapsed {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.expand-collapse.expanded {
+    max-height: 1000px;
+    opacity: 1;
+}
+
+/* 7. 高级滑动抽屉 */
+.slide-drawer {
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.slide-drawer.from-left {
+    transform: translateX(-100%);
+}
+
+.slide-drawer.from-right {
+    transform: translateX(100%);
+}
+
+.slide-drawer.from-bottom {
+    transform: translateY(100%);
+}
+
+.slide-drawer.visible {
+    transform: translateX(0) translateY(0);
+    opacity: 1;
+}
+
+/* 8. 3D 倾斜悬停效果 */
+.tilt-hover {
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform-style: preserve-3d;
+    perspective: 1000px;
+}
+
+.tilt-hover:hover {
+    transform: perspective(1000px) rotateX(5deg) rotateY(-5deg) scale(1.02);
+}
+
+/* 9. 柔和发光脉冲 */
+.glow-pulse-soft {
+    animation: glowPulseSoft 3s ease-in-out infinite;
+}
+
+@keyframes glowPulseSoft {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(212, 175, 55, 0.2),
+                    0 0 20px rgba(212, 175, 55, 0.1);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.4),
+                    0 0 40px rgba(212, 175, 55, 0.2),
+                    0 0 60px rgba(212, 175, 55, 0.1);
+    }
+}
+
+/* 10. 苹果风格模态框 */
+.apple-modal-enter {
+    animation: appleModalIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.apple-modal-leave {
+    animation: appleModalOut 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+@keyframes appleModalIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+        filter: blur(4px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: blur(0);
+    }
+}
+
+@keyframes appleModalOut {
+    0% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: blur(0);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+        filter: blur(2px);
+    }
+}
+
+/* 11. 背景模糊遮罩 */
+.backdrop-blur-overlay {
+    backdrop-filter: blur(0px);
+    background: rgba(0, 0, 0, 0);
+    transition: backdrop-filter 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                background 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.backdrop-blur-overlay.active {
+    backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.5);
+}
+
+/* 12. 流畅文字淡入 */
+.text-reveal {
+    overflow: hidden;
+}
+
+.text-reveal span {
+    display: inline-block;
+    transform: translateY(100%);
+    animation: textReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes textReveal {
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* 13. 骨架屏加载动画 */
+.skeleton-loading {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.03) 0%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(255, 255, 255, 0.03) 100%
+    );
+    background-size: 200% 100%;
+    animation: skeletonShimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes skeletonShimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* 14. 高亮扫光效果 */
+.highlight-sweep {
+    position: relative;
+    overflow: hidden;
+}
+
+.highlight-sweep::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(212, 175, 55, 0.15) 50%,
+        transparent 100%
+    );
+    animation: highlightSweep 3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes highlightSweep {
+    0%, 100% {
+        left: -100%;
+    }
+    50% {
+        left: 100%;
+    }
+}
+
+/* 15. 优雅的焦点环 */
+.focus-ring-elegant {
+    outline: none;
+    position: relative;
+}
+
+.focus-ring-elegant::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: inherit;
+    border: 2px solid transparent;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    pointer-events: none;
+}
+
+.focus-ring-elegant:focus-visible::before {
+    border-color: rgba(212, 175, 55, 0.6);
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
+}
+
+/* 16. 平滑滚动指示器 */
+.scroll-indicator {
+    animation: scrollBounce 2s ease-in-out infinite;
+}
+
+@keyframes scrollBounce {
+    0%, 100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(10px);
+        opacity: 0.5;
+    }
+}
+
+/* 17. 数值变化动画 */
+.number-transition {
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-block;
+}
+
+.number-transition.changed {
+    animation: numberPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes numberPop {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+        color: #d4af37;
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* 18. 进度条动画 */
+.progress-bar-animated {
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar-animated::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        transparent 100%
+    );
+    animation: progressShine 1.5s ease-in-out infinite;
+}
+
+@keyframes progressShine {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* 19. 图标动画效果 */
+.icon-hover-rotate {
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.icon-hover-rotate:hover {
+    transform: rotate(15deg) scale(1.1);
+}
+
+.icon-hover-bounce {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.icon-hover-bounce:hover {
+    animation: iconBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes iconBounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    25% {
+        transform: translateY(-6px);
+    }
+    50% {
+        transform: translateY(0);
+    }
+    75% {
+        transform: translateY(-3px);
+    }
+}
+
+/* 20. 磁吸效果 */
+.magnetic-hover {
+    transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* 21. Vue 高级过渡动画 */
+
+/* 苹果风格模糊过渡 */
+.apple-blur-enter-active {
+    transition: all 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.apple-blur-leave-active {
+    transition: all 0.25s cubic-bezier(0.4, 0, 1, 1);
+}
+
+.apple-blur-enter-from {
+    opacity: 0;
+    transform: scale(0.96);
+    filter: blur(8px);
+}
+
+.apple-blur-leave-to {
+    opacity: 0;
+    transform: scale(0.98);
+    filter: blur(4px);
+}
+
+/* 弹性缩放过渡 */
+.spring-scale-enter-active {
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.spring-scale-leave-active {
+    transition: all 0.3s cubic-bezier(0.4, 0, 1, 1);
+}
+
+.spring-scale-enter-from {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+.spring-scale-leave-to {
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+/* 滑动淡入过渡 */
+.slide-fade-enter-active {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.slide-fade-leave-active {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide-fade-enter-from {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.slide-fade-leave-to {
+    opacity: 0;
+    transform: translateY(-15px);
+}
+
+/* 翻转过渡 */
+.flip-enter-active {
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.flip-leave-active {
+    transition: all 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53);
+}
+
+.flip-enter-from {
+    opacity: 0;
+    transform: perspective(400px) rotateY(-90deg);
+}
+
+.flip-leave-to {
+    opacity: 0;
+    transform: perspective(400px) rotateY(90deg);
+}
+
+/* 22. 列表项错落动画 */
+.list-enter-active,
+.list-leave-active {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.list-enter-from,
+.list-leave-to {
+    opacity: 0;
+    transform: translateX(-30px);
+}
+
+.list-move {
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* 23. 面板切换动画 */
+.panel-switch-enter-active {
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.panel-switch-leave-active {
+    transition: all 0.3s cubic-bezier(0.4, 0, 1, 1);
+    position: absolute;
+    width: 100%;
+}
+
+.panel-switch-enter-from {
+    opacity: 0;
+    transform: translateX(100%) scale(0.95);
+}
+
+.panel-switch-leave-to {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.95);
+}
+
+/* 24. 毛玻璃卡片悬停 */
+.glass-card-hover {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.glass-card-hover:hover {
+    backdrop-filter: blur(15px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(212, 175, 55, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    transform: translateY(-5px);
+}
+
+/* 25. 加载旋转动画（更流畅）*/
+.loading-spinner-smooth {
+    animation: spinSmooth 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+@keyframes spinSmooth {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* 26. 波浪加载效果 */
+.wave-loading span {
+    display: inline-block;
+    animation: waveBounce 1.2s ease-in-out infinite;
+}
+
+.wave-loading span:nth-child(1) { animation-delay: 0s; }
+.wave-loading span:nth-child(2) { animation-delay: 0.1s; }
+.wave-loading span:nth-child(3) { animation-delay: 0.2s; }
+.wave-loading span:nth-child(4) { animation-delay: 0.3s; }
+.wave-loading span:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes waveBounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* 27. 渐变边框动画 */
+.gradient-border-animated {
+    position: relative;
+    background: transparent;
+}
+
+.gradient-border-animated::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 2px;
+    background: linear-gradient(
+        90deg,
+        #d4af37,
+        #f0d77c,
+        #d4af37,
+        #8a702a,
+        #d4af37
+    );
+    background-size: 300% 100%;
+    border-radius: inherit;
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: gradientMove 3s linear infinite;
+}
+
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 300% 50%;
+    }
+}
+
+/* 28. 微交互 - 开关切换 */
+.toggle-switch {
+    transition: background 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.toggle-switch .toggle-knob {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.toggle-switch.active .toggle-knob {
+    transform: translateX(100%);
+}
+
+/* 29. 点击涟漪扩散 */
+.click-ripple {
+    position: relative;
+    overflow: hidden;
+}
+
+.click-ripple .ripple-effect {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(212, 175, 55, 0.3);
+    transform: scale(0);
+    animation: rippleAnimation 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes rippleAnimation {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* 30. 减少动画（尊重用户偏好）*/
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

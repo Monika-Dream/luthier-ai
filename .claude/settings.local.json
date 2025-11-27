@@ -1,0 +1,27 @@
+{
+  "env": {
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)",
+      "Bash(echo:*)",
+      "Bash(\"D:\\PROJECT\\Luthier_AI\\src\\services\\geminiService.js\")",
+      "Bash(node test-openai.js:*)",
+      "Bash(node:*)",
+      "Bash(src/services/geminiService_temp.js)",
+      "Bash(cat:*)",
+      "Bash(src/services/geminiService.js)",
+      "Bash(npm i:*)",
+      "Bash(npm run build:*)",
+      "Bash(git -C \"D:\\PROJECT\\Luthier_AI\" remote -v)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
