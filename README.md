@@ -1,4 +1,4 @@
-# Luthier AI - 智能小提琴诊断实验室
+# Luthier AI - 智能小提琴诊断实验室 (https://monika-dream.github.io/luthier-ai/)
 
 ## 项目简介
 
